@@ -1,36 +1,27 @@
-using Firebase;
-using Firebase.Extensions;
+using Assets.Scripts.Controllers;
+using Assets.Scripts.Managers;
 using UnityEngine;
+using Zenject;
 
-public class Initiator : MonoBehaviour
+public class Initiator : IInitializable
 {
-    private FirebaseApp app;
-    // Start is called before the first frame update
-    void Start()
-    {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == DependencyStatus.Available)
-            {
-                // Create and hold a reference to your FirebaseApp,
-                // where app is a Firebase.FirebaseApp property of your application class.
-                app = FirebaseApp.Create();
+    private readonly InitializeCanvasController _initCanvasController;
+    private readonly MenuController _menuController;
+    private readonly ClickerController _clickerController;
 
-                // Set a flag here to indicate whether Firebase is ready to use by your app.
-            }
-            else
-            {
-                UnityEngine.Debug.LogError(string.Format(
-                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
-                // Firebase Unity SDK is not safe to use here.
-            }
-        });
+    public Initiator(InitializeCanvasController initCanvasController, MenuController menuController, ClickerController clickerController)
+    {
+        _initCanvasController = initCanvasController;
+        _menuController = menuController;
+        _clickerController = clickerController;
     }
 
-    // Update is called once per frame
-    void Update()
+    public async void Initialize()
     {
-        
+        _initCanvasController.Init();
+        _initCanvasController.Exit();
+
+        await _menuController.Run();
+        _clickerController.Init();
     }
 }

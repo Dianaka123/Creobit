@@ -27,5 +27,10 @@ namespace Assets.Scripts.Views
             _load.onClick.RemoveAllListeners();
             _unload.onClick.RemoveAllListeners();
         }
+
+        public void SetActive(bool active)
+        {
+            gameObject.SetActive(active);
+        }
     }
 }

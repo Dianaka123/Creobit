@@ -3,22 +3,18 @@ using UnityEngine;
 
 namespace Assets.Scripts.Managers
 {
-    public class CanvasManager : MonoBehaviour
+    public class CanvasManager
     {
-        [SerializeField]
-        private ChooseGameView ChooseGameView;
+        private GameObject _canvas;
+        private MenuView _menuView;
+        
+        public GameObject Canvas => _canvas;
+        public MenuView Menu => _menuView;
 
-        [SerializeField]
-        private DataManipulatorView ChooseDataManipulatorView;
-
-        private void Awake()
+        public void Setup(GameObject canvas, MenuView view)
         {
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            _canvas = canvas;
+            _menuView = view;
         }
     }
 }
