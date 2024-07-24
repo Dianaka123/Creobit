@@ -1,19 +1,18 @@
 using Assets.Scripts.Controllers;
-using Assets.Scripts.Managers;
-using UnityEngine;
 using Zenject;
 
 public class Initiator : IInitializable
 {
     private readonly InitializeCanvasController _initCanvasController;
-    private readonly MenuController _menuController;
+    private readonly MenuController _initializeMenuController;
     private readonly ClickerController _clickerController;
 
-    public Initiator(InitializeCanvasController initCanvasController, MenuController menuController, ClickerController clickerController)
+    public Initiator(InitializeCanvasController initCanvasController, MenuController initializeMenuController, ClickerController clickerController)
     {
         _initCanvasController = initCanvasController;
-        _menuController = menuController;
+        _initializeMenuController = initializeMenuController;
         _clickerController = clickerController;
+
     }
 
     public async void Initialize()
@@ -21,7 +20,12 @@ public class Initiator : IInitializable
         _initCanvasController.Init();
         _initCanvasController.Exit();
 
-        await _menuController.Run();
+        //_initializeMenuController.Init();
+        //await _initializeMenuController.Run();
+        //_initializeMenuController.Exit();
+
         _clickerController.Init();
+        await _clickerController.Run();
+        _clickerController.Exit();
     }
 }

@@ -6,15 +6,11 @@ namespace Assets.Scripts.Managers
     public class CanvasManager
     {
         private GameObject _canvas;
-        private MenuView _menuView;
-        
         public GameObject Canvas => _canvas;
-        public MenuView Menu => _menuView;
 
-        public void Setup(GameObject canvas, MenuView view)
+        public void Setup(GameObject canvas)
         {
             _canvas = canvas;
-            _menuView = view;
         }
     }
 }

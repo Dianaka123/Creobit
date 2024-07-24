@@ -24,8 +24,6 @@ namespace Assets.Scripts.Installers
             
             Container.BindInterfacesAndSelfTo<InitializeCanvasController>().AsSingle();
             Container.BindInterfacesAndSelfTo<MenuController>().AsSingle();
-            Container.BindInterfacesAndSelfTo<MenuChooseGameController>().AsSingle();
-            Container.BindInterfacesAndSelfTo<MenuDataManipulatorController>().AsSingle();
             Container.BindInterfacesAndSelfTo<ClickerController>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<Initiator>().AsSingle().NonLazy();

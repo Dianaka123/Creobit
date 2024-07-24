@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Enums;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,13 +14,16 @@ namespace Assets.Scripts.Views
         [SerializeField]
         private Button _unload;
 
-        public event Action LoadClick;
-        public event Action UnloadClick;
+        [SerializeField]
+        private GamesType _gameType;
+
+        public event Action<GamesType> LoadClick;
+        public event Action<GamesType> UnloadClick;
 
         private void Awake()
         {
-            _load.onClick.AddListener(() => LoadClick?.Invoke());
-            _unload.onClick.AddListener(() => UnloadClick?.Invoke());
+            _load.onClick.AddListener(() => LoadClick?.Invoke(_gameType));
+            _unload.onClick.AddListener(() => UnloadClick?.Invoke(_gameType));
         }
 
         public void Dispose()

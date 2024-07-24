@@ -42,7 +42,7 @@ namespace Assets.Scripts.Systems
             var bundle = GetAssetBundle(gamesType);
             if (bundle != null)
             {
-                bundle.Unload(true);
+                bundle.Unload(false);
                 _gameTypeToBundle.Remove(gamesType);
             }
             

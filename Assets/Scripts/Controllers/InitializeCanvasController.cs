@@ -1,32 +1,25 @@
 ﻿using Assets.Scripts.Managers;
-using Assets.Scripts.Views;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace Assets.Scripts.Controllers
 {
     public class InitializeCanvasController: IController
     {
-        private readonly IFactory<MenuView> _menuViewFactory;
         private readonly CanvasManager _canvasManager;
         private GameObject _canvas;
 
-        public InitializeCanvasController(IFactory<MenuView> menuViewFactory, CanvasManager canvasManager)
+        public InitializeCanvasController( CanvasManager canvasManager)
         {
-            _menuViewFactory = menuViewFactory;
             _canvasManager = canvasManager;
         }
 
         public void Init()
         {
             _canvas = CreateCanvas();
-            var menu = _menuViewFactory.Create();
-            menu.transform.parent = _canvas.transform;
-            menu.transform.localPosition = Vector3.zero;
 
-            _canvasManager.Setup(_canvas, menu);
+            _canvasManager.Setup(_canvas);
         }
 
         public void Exit() { }

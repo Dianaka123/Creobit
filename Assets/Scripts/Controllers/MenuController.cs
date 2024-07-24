@@ -1,39 +1,88 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Systems.Interfaces;
+using Assets.Scripts.Views;
+using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Controllers
 {
     public class MenuController : IController
     {
-        private readonly MenuChooseGameController _menuChooseGameController;
-        private readonly MenuDataManipulatorController _menuDataManipulatorController;
+        private readonly CanvasManager _canvasManger;
+        private readonly GameManager _gameManager;
+        private readonly IFactory<MenuView> _menuViewFactory;
+        private readonly IAssetProvider _assetProvider;
 
-        public MenuController(MenuChooseGameController menuChooseGameController, MenuDataManipulatorController menuDataManipulatorController)
+        private MenuView _menuView;
+        private bool _isGameChoosed;
+
+        public MenuController(CanvasManager canvasManager, IFactory<MenuView> menuViewFactory, IAssetProvider assetProvider)
         {
-            _menuChooseGameController = menuChooseGameController;
-            _menuDataManipulatorController = menuDataManipulatorController;
-
-        }
-
-        public void Init()
-        {
-            
-        }
-
-        public async UniTask Run()
-        {
-            _menuChooseGameController.Init();
-            await _menuChooseGameController.Run();
-            _menuChooseGameController.Exit();
-
-            _menuDataManipulatorController.Init();
-            await _menuDataManipulatorController.Run();
-            _menuDataManipulatorController.Exit();
+            _canvasManger = canvasManager;
+            _menuViewFactory = menuViewFactory;
+            _assetProvider = assetProvider;
         }
 
         public void Exit()
         {
+            _menuView.ClickerDataManipulator.LoadClick -= LoadClick;
+            _menuView.ClickerDataManipulator.UnloadClick -= UnloadClick;
 
+            _menuView.RunnerDataManipulator.LoadClick -= LoadClick;
+            _menuView.RunnerDataManipulator.UnloadClick -= UnloadClick;
+
+            _menuView.ChooseGameView.ClickerClicked -= OnClickerClicked;
+            _menuView.ChooseGameView.RunnerClicked -= OnRunnerClicked;
+
+            _menuView.Destroy();
+        }
+
+        public void Init()
+        {
+            MenuView view = _menuViewFactory.Create();
+            view.transform.SetParent(_canvasManger.Canvas.transform);
+            view.transform.localPosition = UnityEngine.Vector3.zero;
+
+            _menuView = view;
+        }
+
+        public async UniTask Run()
+        {
+            _menuView.ClickerDataManipulator.LoadClick += LoadClick;
+            _menuView.ClickerDataManipulator.UnloadClick += UnloadClick;
+
+            _menuView.RunnerDataManipulator.LoadClick += LoadClick;
+            _menuView.RunnerDataManipulator.UnloadClick += UnloadClick;
+
+            _menuView.ChooseGameView.ClickerClicked += OnClickerClicked;
+            _menuView.ChooseGameView.RunnerClicked += OnRunnerClicked;
+
+            await UniTask.WaitUntil(() => _isGameChoosed);
+        }
+
+        private void OnRunnerClicked()
+        {
+            _gameManager.CurrentGame = GamesType.Runner;
+            _isGameChoosed = true;
+        }
+
+        private void OnClickerClicked()
+        {
+            _gameManager.CurrentGame = GamesType.Clicker;
+            _isGameChoosed = true;
+        }
+
+        private void UnloadClick(GamesType type)
+        {
+            _assetProvider.UnloadAsync(type);
+        }
+
+        private void LoadClick(GamesType type)
+        {
+            _assetProvider.PreloadAsync(type);
         }
     }
 }
