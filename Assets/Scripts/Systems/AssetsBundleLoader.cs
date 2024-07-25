@@ -2,6 +2,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System;
+using Assets.Scripts.Enums;
 
 namespace Assets.Scripts.Systems.Interfaces
 {

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.Systems.Interfaces
 {
-    public interface IAssetsUriResolver
+    public interface IUriResolver
     {
-        UniTask<Uri> ResolveUriAsync(GamesType gamesType);
+        UniTask<Uri> ResolveAssetsUriAsync(string url);
     }
 }

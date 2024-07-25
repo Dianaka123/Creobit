@@ -5,10 +5,10 @@ namespace Assets.Scripts.Controllers
 {
     public interface IController
     {
-        void Init();
+        UniTask Init();
 
         UniTask Run();
 
-        void Exit();
+        UniTask Exit();
     }
 }

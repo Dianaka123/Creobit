@@ -2,6 +2,6 @@
 {
     public interface IServerConfigProvider
     {
-        public Configuration Config { get; }
+        public ServerConfiguration Config { get; }
     }
 }

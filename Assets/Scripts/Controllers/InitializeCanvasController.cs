@@ -15,14 +15,15 @@ namespace Assets.Scripts.Controllers
             _canvasManager = canvasManager;
         }
 
-        public void Init()
+        public UniTask Init()
         {
             _canvas = CreateCanvas();
 
             _canvasManager.Setup(_canvas);
+            return UniTask.CompletedTask;
         }
 
-        public void Exit() { }
+        public UniTask Exit() => UniTask.CompletedTask;
 
         //TODO: move to factory
         private GameObject CreateCanvas()

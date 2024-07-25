@@ -5,12 +5,14 @@ namespace Assets.Scripts.Controllers
 {
     public class RunnerController : IController
     {
-        public void Exit()
+
+
+        public UniTask Exit()
         {
             throw new NotImplementedException();
         }
 
-        public void Init()
+        public UniTask Init()
         {
             throw new NotImplementedException();
         }

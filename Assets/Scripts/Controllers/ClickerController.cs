@@ -4,56 +4,58 @@ using Assets.Scripts.Systems.Interfaces;
 using Assets.Scripts.Views;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Zenject;
 
 namespace Assets.Scripts.Controllers
 {
     public class ClickerController : IController
     {
         private readonly IAssetProvider _assetProvider;
-        private readonly IFactory<ClickerView> _factory;
         private readonly CanvasManager _canvasManager;
+        private readonly IGameConfigProvider _gameConfigProvider;
+        private readonly IApplicationOnDestroy _syncNotifier;
 
         private ClickerView _clickerView;
-        private int _clickerCount;
         private bool _isGoBackClicked;
 
-        public ClickerController(IAssetProvider assetProvider, IFactory<ClickerView> clickerView, CanvasManager canvasManager)
+        private Texture2D _gameTexture;
+
+        public ClickerController(IAssetProvider assetProvider, CanvasManager canvasManager,
+            IGameConfigProvider gameConfigProvider, IApplicationOnDestroy syncNotifier)
         {
             _assetProvider = assetProvider;
-            _factory = clickerView;
             _canvasManager = canvasManager;
+            _gameConfigProvider = gameConfigProvider;
+            _syncNotifier = syncNotifier;
         }
 
-        public void Exit()
+        public async UniTask Exit()
         {
             _clickerView.Clicked -= OnClicked;
             _clickerView.Destroy();
         }
 
-        public void Init()
+        public async UniTask Init()
         {
-            _clickerView = _factory.Create();
-            _clickerView.transform.SetParent(_canvasManager.Canvas.transform);
-            _clickerView.transform.localPosition = Vector3.zero;
-            
-            _clickerCount = 0;
-            _clickerView.SetText(_clickerCount.ToString());
+            await _gameConfigProvider.Download(); 
+            await _assetProvider.PreloadAsync(GamesType.Clicker);
+
+            var assetBundle = _assetProvider.GetAssetBundle(GamesType.Clicker);
+
+            var clickerViewAsset = assetBundle.LoadAsset<GameObject>("Clicker");
+            _gameTexture = (Texture2D)await assetBundle.LoadAssetAsync("Click");
+
+            var clickerViewGO = GameObject.Instantiate(clickerViewAsset);
+            clickerViewGO.transform.SetParent(_canvasManager.Canvas.transform);
+            clickerViewGO.transform.localPosition = Vector3.zero;
+
+            _clickerView = clickerViewGO.GetComponent<ClickerView>();
         }
 
         //TODO: Need to fix - Image loaded not in time
         public async UniTask Run()
         {
-            var assetBundle = _assetProvider.GetAssetBundle(GamesType.Clicker);
-            if (assetBundle == null)
-            {
-                await _assetProvider.PreloadAsync(GamesType.Clicker);
-            }
-
-            assetBundle = _assetProvider.GetAssetBundle(GamesType.Clicker);
-
-            Texture2D texture = (Texture2D)await assetBundle.LoadAssetAsync("Click");
-            _clickerView.SetImage(texture);
+            _clickerView.SetImage(_gameTexture);
+           _clickerView.SetText(_gameConfigProvider.Configuration.ClickCount.ToString());
 
             _clickerView.Clicked += OnClicked;
             _clickerView.GoBack += OnGoBack;
@@ -68,9 +70,8 @@ namespace Assets.Scripts.Controllers
 
         private void OnClicked()
         {
-            //TODO: write/read it by used json file
-            _clickerCount++;
-            _clickerView.SetText(_clickerCount.ToString());
+            _gameConfigProvider.Configuration.ClickCount++;
+            _clickerView.SetText(_gameConfigProvider.Configuration.ClickCount.ToString());
         }
     }
 }

@@ -10,16 +10,9 @@ using Zenject;
 
 namespace Assets.Scripts.Systems
 {
-    public class FirbaseSystem : IInitializable, IDisposable, IAssetsUriResolver
+    public class FirbaseSystem : IInitializable, IDisposable, IUriResolver, IServerFileProvider
     {
-        private readonly IServerConfigProvider _configProvider;
-
         private FirebaseApp app;
-
-        public FirbaseSystem(IServerConfigProvider configProvider)
-        {
-            _configProvider = configProvider;
-        }
 
         public async void Initialize()
         {
@@ -44,17 +37,28 @@ namespace Assets.Scripts.Systems
             app = null;
         }
 
-        public UniTask<Uri> ResolveUriAsync(GamesType gamesType)
+        public UniTask<Uri> ResolveAssetsUriAsync(string url)
+        {
+            StorageReference assetsRef = GetRef(url);
+            return assetsRef.GetDownloadUrlAsync().AsUniTask();
+        }
+
+        public UniTask<byte[]> LoadFile(string url)
+        {
+            StorageReference fileRef = GetRef(url);
+            return fileRef.GetBytesAsync(long.MaxValue).AsUniTask();
+        }
+
+        private StorageReference GetRef(string url)
         {
             var storage = FirebaseStorage.DefaultInstance;
+            return storage.GetReferenceFromUrl(url);
+        }
 
-            string url = gamesType == GamesType.Clicker
-                ? _configProvider.Config.ClickerResourcesURL 
-                : _configProvider.Config.RunnerResourcesURL;
-
-            StorageReference imageRef = storage.GetReferenceFromUrl(url);
-
-            return imageRef.GetDownloadUrlAsync().AsUniTask();
+        public async UniTask UpdateFile(byte[] bytes, string url)
+        {
+            StorageReference fileRef = GetRef(url);
+            await fileRef.PutBytesAsync(bytes);
         }
     }
 }

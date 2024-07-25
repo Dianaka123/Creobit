@@ -1,4 +1,5 @@
 using Assets.Scripts.Controllers;
+using UnityEngine;
 using Zenject;
 
 public class Initiator : IInitializable
@@ -24,8 +25,8 @@ public class Initiator : IInitializable
         //await _initializeMenuController.Run();
         //_initializeMenuController.Exit();
 
-        _clickerController.Init();
+        await _clickerController.Init();
         await _clickerController.Run();
-        _clickerController.Exit();
+        await _clickerController.Exit();
     }
 }

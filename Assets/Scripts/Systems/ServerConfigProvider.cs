@@ -9,9 +9,9 @@ namespace Assets.Scripts.Systems
     public class ServerConfigProvider : IServerConfigProvider
     {
         private static readonly string _path = Application.dataPath + "/config.json";
-        private Configuration _configuration;
+        private ServerConfiguration _configuration;
 
-        public Configuration Config
+        public ServerConfiguration Config
         {
             get
             {
@@ -19,7 +19,8 @@ namespace Assets.Scripts.Systems
                 {
                     try
                     {
-                        _configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(_path));
+                        var str = File.ReadAllText(_path);
+                        _configuration = JsonConvert.DeserializeObject<ServerConfiguration>(File.ReadAllText(_path));
                     }
                     catch (Exception e)
                     {

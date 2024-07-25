@@ -10,7 +10,6 @@ namespace Assets.Scripts.Installers
     public class MainInstaller : MonoInstaller
     {
         public MenuView MenuView;
-        public ClickerView ClickerView;
 
         public override void InstallBindings()
         {
@@ -18,9 +17,9 @@ namespace Assets.Scripts.Installers
             Container.BindInterfacesAndSelfTo<ServerConfigProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<AssetProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<AssetsBundleLoader>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameConfigurationProvider>().AsSingle();
 
             Container.BindIFactory<MenuView>().FromComponentInNewPrefab(MenuView);
-            Container.BindIFactory<ClickerView>().FromComponentInNewPrefab(ClickerView);
             
             Container.BindInterfacesAndSelfTo<InitializeCanvasController>().AsSingle();
             Container.BindInterfacesAndSelfTo<MenuController>().AsSingle();

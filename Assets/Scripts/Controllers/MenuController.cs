@@ -3,8 +3,6 @@ using Assets.Scripts.Managers;
 using Assets.Scripts.Systems.Interfaces;
 using Assets.Scripts.Views;
 using Cysharp.Threading.Tasks;
-using System;
-using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Controllers
@@ -15,18 +13,20 @@ namespace Assets.Scripts.Controllers
         private readonly GameManager _gameManager;
         private readonly IFactory<MenuView> _menuViewFactory;
         private readonly IAssetProvider _assetProvider;
+        private readonly IGameConfigProvider _gameConfigProvider;
 
         private MenuView _menuView;
         private bool _isGameChoosed;
 
-        public MenuController(CanvasManager canvasManager, IFactory<MenuView> menuViewFactory, IAssetProvider assetProvider)
+        public MenuController(CanvasManager canvasManager, IFactory<MenuView> menuViewFactory, IAssetProvider assetProvider, IGameConfigProvider gameConfigProvider)
         {
             _canvasManger = canvasManager;
             _menuViewFactory = menuViewFactory;
             _assetProvider = assetProvider;
+            _gameConfigProvider = gameConfigProvider;
         }
 
-        public void Exit()
+        public UniTask Exit()
         {
             _menuView.ClickerDataManipulator.LoadClick -= LoadClick;
             _menuView.ClickerDataManipulator.UnloadClick -= UnloadClick;
@@ -38,15 +38,18 @@ namespace Assets.Scripts.Controllers
             _menuView.ChooseGameView.RunnerClicked -= OnRunnerClicked;
 
             _menuView.Destroy();
+
+            return UniTask.CompletedTask;
         }
 
-        public void Init()
+        public UniTask Init()
         {
             MenuView view = _menuViewFactory.Create();
             view.transform.SetParent(_canvasManger.Canvas.transform);
             view.transform.localPosition = UnityEngine.Vector3.zero;
 
             _menuView = view;
+            return UniTask.CompletedTask;
         }
 
         public async UniTask Run()
@@ -77,11 +80,13 @@ namespace Assets.Scripts.Controllers
 
         private void UnloadClick(GamesType type)
         {
+            _gameConfigProvider.Unload();
             _assetProvider.UnloadAsync(type);
         }
 
         private void LoadClick(GamesType type)
         {
+            _gameConfigProvider.Download();
             _assetProvider.PreloadAsync(type);
         }
     }

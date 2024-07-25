@@ -10,14 +10,16 @@ namespace Assets.Scripts.Systems
     public class AssetProvider : IAssetProvider
     {
         private readonly IAssetsLoader _assetLoader;
-        private readonly IAssetsUriResolver _assetsUriResolver;
+        private readonly IUriResolver _assetsUriResolver;
+        private readonly IServerConfigProvider _configProvider;
 
         private readonly Dictionary<GamesType, AssetBundle> _gameTypeToBundle = new ();
         
-        public AssetProvider(IAssetsLoader assetLoader, IAssetsUriResolver assetsUriResolver)
+        public AssetProvider(IAssetsLoader assetLoader, IUriResolver assetsUriResolver, IServerConfigProvider configProvider)
         {
             _assetLoader = assetLoader;
             _assetsUriResolver = assetsUriResolver;
+            _configProvider = configProvider;
         }
 
         public async UniTask PreloadAsync(GamesType gamesType)
@@ -28,7 +30,11 @@ namespace Assets.Scripts.Systems
                 return;
             }
 
-            Uri uri = await _assetsUriResolver.ResolveUriAsync(gamesType);
+            string url = gamesType == GamesType.Clicker
+               ? _configProvider.Config.ClickerResourcesURL
+               : _configProvider.Config.RunnerResourcesURL;
+
+            Uri uri = await _assetsUriResolver.ResolveAssetsUriAsync(url);
             AssetBundle assetBundle = await _assetLoader.LoadAsync(uri);
             if (assetBundle == null)
             {
