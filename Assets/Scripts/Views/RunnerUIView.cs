@@ -59,6 +59,11 @@ namespace Assets.Scripts.Views
             _currentTime.text = time;
         }
 
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
         private void Reset()
         {
             _currentTime.text = string.Empty;

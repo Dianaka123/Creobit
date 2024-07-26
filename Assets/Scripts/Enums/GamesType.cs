@@ -3,6 +3,7 @@
     public enum GamesType
     {
         Clicker,
-        Runner
+        Runner,
+        None
     }
 }

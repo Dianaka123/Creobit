@@ -316,6 +316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MenuView: {fileID: 67173389148726930, guid: 71f224ce6e53a564eb9136bef507f0dc, type: 3}
+  SomethingWrongPopupView: {fileID: 336495243369575995, guid: 16fcfc2fbe8c7f543ad4caef3da0ed3a, type: 3}
 --- !u!114 &911167813
 MonoBehaviour:
   m_ObjectHideFlags: 0

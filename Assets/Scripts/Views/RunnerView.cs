@@ -26,5 +26,10 @@ namespace Assets.Scripts.Views
         public FinishView FinishView => _finishView;
 
         public CameraSettings CameraSettings => _cameraSettings;
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -7,8 +7,6 @@ namespace Assets.Scripts.Controllers
     {
         UniTask Init();
 
-        UniTask Run();
-
         UniTask Exit();
     }
 }

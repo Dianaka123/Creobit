@@ -1,4 +1,5 @@
 using Assets.Scripts.ConfigData;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Systems.Interfaces;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -28,17 +29,10 @@ namespace Assets.Scripts.Systems
         {
             if(Configuration == null)
             {
-                try
-                {
-                    _url = _serverConfigProvider.Config.GameConfigURL;
-                    byte[] configBytes = await _serverFileLoader.LoadFile(_url);
-                    string jsonStr = Encoding.UTF8.GetString(configBytes);
-                    Configuration = JsonConvert.DeserializeObject<GameConfiguration>(jsonStr);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError(ex.Message);
-                }
+                _url = _serverConfigProvider.Config.GameConfigURL;
+                byte[] configBytes = await _serverFileLoader.LoadFile(_url);
+                string jsonStr = Encoding.UTF8.GetString(configBytes);
+                Configuration = JsonConvert.DeserializeObject<GameConfiguration>(jsonStr);
             }
         }
 

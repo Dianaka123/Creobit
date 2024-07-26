@@ -10,6 +10,8 @@ namespace Assets.Scripts.Installers
     public class MainInstaller : MonoInstaller
     {
         public MenuView MenuView;
+        public SomethingWrongPopupView SomethingWrongPopupView;
+        //public DebugLog DebugLog;
 
         public override void InstallBindings()
         {
@@ -21,8 +23,12 @@ namespace Assets.Scripts.Installers
             Container.BindInterfacesAndSelfTo<MovementSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<RunnerTimeManager>().AsSingle();
             Container.BindInterfacesAndSelfTo<TimeService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ErrorHandler>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PopupManager>().AsSingle();
 
             Container.BindIFactory<MenuView>().FromComponentInNewPrefab(MenuView);
+            Container.BindIFactory<SomethingWrongPopupView>().FromComponentInNewPrefab(SomethingWrongPopupView);
+            //Container.BindIFactory<DebugLog>().FromComponentInNewPrefab(DebugLog);
             
             Container.BindInterfacesAndSelfTo<InitializeCanvasController>().AsSingle();
             Container.BindInterfacesAndSelfTo<MenuController>().AsSingle();

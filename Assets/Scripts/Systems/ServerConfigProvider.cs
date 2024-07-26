@@ -17,19 +17,29 @@ namespace Assets.Scripts.Systems
             {
                 if(_configuration == null)
                 {
-                    try
+                    _configuration = new ServerConfiguration()
                     {
-                        var str = File.ReadAllText(_path);
-                        _configuration = JsonConvert.DeserializeObject<ServerConfiguration>(File.ReadAllText(_path));
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e.Message);
-                        return null;
-                    }
+                        RunnerResourcesURL = "gs://acquired-sunup-429810-u9.appspot.com/AssetsBundles/runner",
+                        ClickerResourcesURL = "gs://acquired-sunup-429810-u9.appspot.com/AssetsBundles/clicker",
+                        GameConfigURL = "gs://acquired-sunup-429810-u9.appspot.com/Configs/config.json"
+                    };
                 }
 
                 return _configuration;
+            }
+        }
+
+        private ServerConfiguration ReadfromJson()
+        {
+            try
+            {
+                var str = File.ReadAllText(_path);
+                return JsonConvert.DeserializeObject<ServerConfiguration>(File.ReadAllText(_path));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+                return null;
             }
         }
     }

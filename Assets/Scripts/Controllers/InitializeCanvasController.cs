@@ -18,7 +18,6 @@ namespace Assets.Scripts.Controllers
         public UniTask Init()
         {
             _canvas = CreateCanvas();
-
             _canvasManager.Setup(_canvas);
             return UniTask.CompletedTask;
         }

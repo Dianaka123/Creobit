@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Assets.Scripts.Controllers
 {
-    public class RunnerController : IController, IFixedTickable
+    public class RunnerController : PreloadControllerBase, IFixedTickable
     {
         private readonly IAssetProvider _assetsProvider;
         private readonly IGameConfigProvider _gameConfigProvider;
@@ -22,14 +22,14 @@ namespace Assets.Scripts.Controllers
         private RunnerView _runnerView;
         private RunnerUIView _runnerUIView;
 
-        private bool isExit;
-        private bool isRunning;
-        private MovementParameters[] movementParams =
+        private bool _isExit;
+        private bool isMovingAvailable;
+        private static readonly MovementParameters[] movementParams =
         {
-            new MovementParameters(MovementType.Straight, 1, 0),
-            new MovementParameters(MovementType.Back, -1, 0),
-            new MovementParameters(MovementType.Left, 0, -1),
-            new MovementParameters(MovementType.Right, 0, 1)
+            new(MovementType.Straight, 1, 0),
+            new(MovementType.Back, -1, 0),
+            new(MovementType.Left, 0, -1),
+            new(MovementType.Right, 0, 1)
         };
 
         private readonly struct MovementParameters
@@ -46,7 +46,8 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        public RunnerController(IAssetProvider assetProvider, IGameConfigProvider gameConfigProvider, IMovementSystem movementSystem, IRunnerTimeManager timeManager, CanvasManager canvasManager, CameraManager cameraManager)
+        public RunnerController(IAssetProvider assetProvider, IPopupManager popupManager, IGameConfigProvider gameConfigProvider, IMovementSystem movementSystem, IRunnerTimeManager timeManager, CanvasManager canvasManager, CameraManager cameraManager) :
+            base(popupManager)
         {
             _assetsProvider = assetProvider;
             _gameConfigProvider = gameConfigProvider;
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Controllers
 
         public void FixedTick()
         {
-            if(!isRunning)
+            if(!isMovingAvailable)
             {
                 return;
             }
@@ -97,15 +98,32 @@ namespace Assets.Scripts.Controllers
             _playerView.Move(movingDirection * fixedDeltaTime, isSpeedUp);
         }
 
-        public async UniTask Init()
+        public override async UniTask Exit()
         {
+            isMovingAvailable = false;
+
+            _runnerView.FinishView.FinishEnter -= OnPlayerFinish;
+            await _assetsProvider.UnloadAsync(GamesType.Runner);
+            _runnerView.Destroy();
+            _runnerUIView.Destroy();
+        }
+
+        protected override async UniTask Run()
+        {
+            await UniTask.WaitUntil(() => _isExit);
+        }
+
+        protected override async UniTask Preload()
+        {
+            _isExit = false;
+
             await _assetsProvider.PreloadAsync(Enums.GamesType.Runner);
             await _gameConfigProvider.Download();
 
             var bundle = _assetsProvider.GetAssetBundle(Enums.GamesType.Runner);
 
-            var enviroment = (GameObject) await bundle.LoadAssetAsync("Runner");
-            var playerAssets = (GameObject) await bundle.LoadAssetAsync("Corgi.prefab");
+            var enviroment = (GameObject)await bundle.LoadAssetAsync("Runner");
+            var playerAssets = (GameObject)await bundle.LoadAssetAsync("Corgi.prefab");
             var runnerUI = (GameObject)await bundle.LoadAssetAsync("RunnerUI");
 
             var uiGo = GameObject.Instantiate(runnerUI, _canvasManager.Canvas.transform);
@@ -119,6 +137,9 @@ namespace Assets.Scripts.Controllers
 
             _runnerView.FinishView.FinishEnter += OnPlayerFinish;
             _runnerUIView.BackClicked += OnBack;
+
+            _timeManager.Start();
+            isMovingAvailable = true;
         }
 
         private async void OnPlayerFinish()
@@ -136,25 +157,12 @@ namespace Assets.Scripts.Controllers
                 _gameConfigProvider.Upload().Forget();
             }
 
-            if(bestResultMs == 0)
+            if (bestResultMs == 0)
             {
                 bestResultMs = resultMs;
             }
 
             _runnerUIView.ShowResult(FormatTime(result), FormatTime(TimeSpan.FromMilliseconds(bestResultMs)));
-        }
-
-        public UniTask Run()
-        {
-            _timeManager.Start();
-            isRunning = true;
-            return UniTask.WaitUntil(() => isExit);
-        }
-
-        public async UniTask Exit()
-        {
-            _runnerView.FinishView.FinishEnter -= OnPlayerFinish;
-            await _assetsProvider.UnloadAsync(GamesType.Runner);
         }
 
         private PlayerAnimations ChooseAnimation(bool isMoving, bool isSpeedUp)
@@ -190,7 +198,7 @@ namespace Assets.Scripts.Controllers
 
         private void OnBack()
         {
-            isExit = true;
+            _isExit = true;
         }
     }
 }

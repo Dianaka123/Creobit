@@ -14,16 +14,23 @@ namespace Assets.Scripts.Controllers
         private readonly IFactory<MenuView> _menuViewFactory;
         private readonly IAssetProvider _assetProvider;
         private readonly IGameConfigProvider _gameConfigProvider;
+        private readonly IPopupManager _popupManager;
 
         private MenuView _menuView;
         private bool _isGameChoosed;
 
-        public MenuController(CanvasManager canvasManager, IFactory<MenuView> menuViewFactory, IAssetProvider assetProvider, IGameConfigProvider gameConfigProvider)
+        public MenuController(CanvasManager canvasManager,
+            IFactory<MenuView> menuViewFactory, IAssetProvider assetProvider,
+            IGameConfigProvider gameConfigProvider, GameManager gameManager,
+            IPopupManager popupManager)
         {
             _canvasManger = canvasManager;
             _menuViewFactory = menuViewFactory;
             _assetProvider = assetProvider;
             _gameConfigProvider = gameConfigProvider;
+            _gameManager = gameManager;
+            _popupManager = popupManager;
+
         }
 
         public UniTask Exit()
@@ -42,18 +49,16 @@ namespace Assets.Scripts.Controllers
             return UniTask.CompletedTask;
         }
 
-        public UniTask Init()
+        public async UniTask Init()
         {
+            _isGameChoosed = false;
+
             MenuView view = _menuViewFactory.Create();
             view.transform.SetParent(_canvasManger.Canvas.transform);
             view.transform.localPosition = UnityEngine.Vector3.zero;
 
             _menuView = view;
-            return UniTask.CompletedTask;
-        }
 
-        public async UniTask Run()
-        {
             _menuView.ClickerDataManipulator.LoadClick += LoadClick;
             _menuView.ClickerDataManipulator.UnloadClick += UnloadClick;
 
@@ -84,10 +89,12 @@ namespace Assets.Scripts.Controllers
             _assetProvider.UnloadAsync(type);
         }
 
-        private void LoadClick(GamesType type)
+        private async void LoadClick(GamesType type)
         {
-            _gameConfigProvider.Download();
-            _assetProvider.PreloadAsync(type);
+            _popupManager.Show("Preloading resources...", false).Forget();
+            await _gameConfigProvider.Download();
+            await _assetProvider.PreloadAsync(type);
+            await _popupManager.Hide();
         }
     }
 }

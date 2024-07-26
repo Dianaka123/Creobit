@@ -31,8 +31,8 @@ namespace Assets.Scripts.Systems
             }
 
             string url = gamesType == GamesType.Clicker
-               ? _configProvider.Config.ClickerResourcesURL
-               : _configProvider.Config.RunnerResourcesURL;
+                ? _configProvider.Config.ClickerResourcesURL
+                : _configProvider.Config.RunnerResourcesURL;
 
             Uri uri = await _assetsUriResolver.ResolveAssetsUriAsync(url);
             AssetBundle assetBundle = await _assetLoader.LoadAsync(uri);
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Systems
                 throw new NullReferenceException();
             }
             _gameTypeToBundle.Add(gamesType, assetBundle);
-        }
+    }
 
         public UniTask UnloadAsync(GamesType gamesType)
         {
