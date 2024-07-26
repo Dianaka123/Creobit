@@ -12,7 +12,6 @@ namespace Assets.Scripts.Controllers
         private readonly IAssetProvider _assetProvider;
         private readonly CanvasManager _canvasManager;
         private readonly IGameConfigProvider _gameConfigProvider;
-        private readonly IApplicationOnDestroy _syncNotifier;
 
         private ClickerView _clickerView;
         private bool _isGoBackClicked;
@@ -20,18 +19,11 @@ namespace Assets.Scripts.Controllers
         private Texture2D _gameTexture;
 
         public ClickerController(IAssetProvider assetProvider, CanvasManager canvasManager,
-            IGameConfigProvider gameConfigProvider, IApplicationOnDestroy syncNotifier)
+            IGameConfigProvider gameConfigProvider)
         {
             _assetProvider = assetProvider;
             _canvasManager = canvasManager;
             _gameConfigProvider = gameConfigProvider;
-            _syncNotifier = syncNotifier;
-        }
-
-        public async UniTask Exit()
-        {
-            _clickerView.Clicked -= OnClicked;
-            _clickerView.Destroy();
         }
 
         public async UniTask Init()
@@ -61,6 +53,13 @@ namespace Assets.Scripts.Controllers
             _clickerView.GoBack += OnGoBack;
 
             await UniTask.WaitUntil(() => _isGoBackClicked);
+        }
+
+        public async UniTask Exit()
+        {
+            await _gameConfigProvider.Upload();
+            _clickerView.Clicked -= OnClicked;
+            _clickerView.Destroy();
         }
 
         private void OnGoBack()

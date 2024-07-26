@@ -10,5 +10,7 @@ namespace Assets.Scripts.Systems.Interfaces
         UniTask Download();
 
         void Unload();
+
+        UniTask Upload();
     }
 }

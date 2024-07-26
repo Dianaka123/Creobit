@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Views;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Managers
 {

@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 4042832996
+CRC: 3942528397
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: clicker
+      Dependencies: {}
+    Info_1:
+      Name: runner
       Dependencies: {}

@@ -9,26 +9,19 @@ using Zenject;
 
 namespace Assets.Scripts.Systems
 {
-    public class GameConfigurationProvider : IGameConfigProvider, IInitializable
+    public class GameConfigurationProvider : IGameConfigProvider, IUniTaskAsyncDisposable
     {
         private readonly IServerConfigProvider _serverConfigProvider;
         private readonly IServerFileProvider _serverFileLoader;
-        private readonly IApplicationOnDestroy _appDestroyNotifier;
 
         private string _url;
 
         public GameConfiguration Configuration { get; private set; }
 
-        public GameConfigurationProvider(IServerConfigProvider configProvider, IServerFileProvider serverFileLoader, IApplicationOnDestroy appDestroyNotifier)
+        public GameConfigurationProvider(IServerConfigProvider configProvider, IServerFileProvider serverFileLoader)
         {
             _serverConfigProvider = configProvider;
             _serverFileLoader = serverFileLoader;
-            _appDestroyNotifier = appDestroyNotifier;
-        }
-
-        public void Initialize()
-        {
-            _appDestroyNotifier.Destroing += async () => await Upload();
         }
 
         public async UniTask Download()
@@ -59,6 +52,11 @@ namespace Assets.Scripts.Systems
             string jsonStr = JsonConvert.SerializeObject(Configuration);
             var bytes = Encoding.UTF8.GetBytes(jsonStr);
             await _serverFileLoader.UpdateFile(bytes, _url);
+        }
+
+        public async UniTask DisposeAsync()
+        {
+            await Upload();
         }
     }
 }

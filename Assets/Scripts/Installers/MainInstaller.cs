@@ -18,12 +18,16 @@ namespace Assets.Scripts.Installers
             Container.BindInterfacesAndSelfTo<AssetProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<AssetsBundleLoader>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameConfigurationProvider>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MovementSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<RunnerTimeManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TimeService>().AsSingle();
 
             Container.BindIFactory<MenuView>().FromComponentInNewPrefab(MenuView);
             
             Container.BindInterfacesAndSelfTo<InitializeCanvasController>().AsSingle();
             Container.BindInterfacesAndSelfTo<MenuController>().AsSingle();
             Container.BindInterfacesAndSelfTo<ClickerController>().AsSingle();
+            Container.BindInterfacesAndSelfTo<RunnerController>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<Initiator>().AsSingle().NonLazy();
             
