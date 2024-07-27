@@ -5,6 +5,7 @@
 exe файл лежит в папке Build - Creobit.exe.
 
 Окно меню:
+
 ![image](https://github.com/user-attachments/assets/8c13a498-b800-4419-89a7-e38219d0821f)
 
 Открытие игры Clicker:
