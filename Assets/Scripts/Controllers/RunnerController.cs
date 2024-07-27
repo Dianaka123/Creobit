@@ -55,7 +55,6 @@ namespace Assets.Scripts.Controllers
             _timeManager = timeManager;
             _canvasManager = canvasManager;
             _cameraManager = cameraManager;
-
         }
 
         public void FixedTick()
@@ -103,7 +102,6 @@ namespace Assets.Scripts.Controllers
             isMovingAvailable = false;
 
             _runnerView.FinishView.FinishEnter -= OnPlayerFinish;
-            await _assetsProvider.UnloadAsync(GamesType.Runner);
             _runnerView.Destroy();
             _runnerUIView.Destroy();
         }

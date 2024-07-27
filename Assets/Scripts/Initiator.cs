@@ -3,7 +3,6 @@ using Assets.Scripts.Managers;
 using Assets.Scripts.Systems.Interfaces;
 using Assets.Scripts.Views;
 using System;
-using UnityEngine;
 using Zenject;
 
 public class Initiator : IInitializable
